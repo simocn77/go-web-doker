@@ -1,0 +1,15 @@
+
+# Create the docker image
+docker build \
+	--network host \
+	--build-arg USER_ID=$(id -u) \
+	--build-arg GROUP_ID=$(id -g) \
+	-t mathapp-development .
+
+# Run the docker image
+docker run -it \
+	--rm \
+	--network host \
+	-p 8010:8010 \
+	-v $PWD/src:/go/src/mathapp \
+	mathapp-development
