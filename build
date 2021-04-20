@@ -10,6 +10,7 @@ docker build \
 docker run -it \
 	--rm \
 	--network host \
+	--name mathapp-instance \
 	-p 8010:8010 \
 	-v $PWD/src:/go/src/mathapp \
 	mathapp-development
