@@ -1,0 +1,35 @@
+
+https://semaphoreci.com/community/tutorials/how-to-deploy-a-go-web-application-with-docker
+
+# install 
+sudo apt install golang
+go version
+
+# clone
+https://github.com/simocn77/go-web-doker.git
+
+# initialize the project
+mkdir src
+cd src
+
+export GOFLAGS=-mod=vendor
+export GO111MODULE=on
+
+go mod init github.com/simocn77/go-web-doker
+
+go mod download
+go mod vendor
+go mod verify
+
+# run 
+go run main.go
+# run test
+go test -v main.go main_test.go
+# stand alone
+cd src
+./mathapp
+
+# on browser
+http://localhost:8010//product//5/5
+http://localhost:8010//sum/3/5
+
