@@ -30,7 +30,7 @@ func (c *mainController) Get() {
 	num2, _ := strconv.Atoi(c.Ctx.Input.Param(":num2"))
 
 	//Set the values for use in the template
-	c.Data["operation"] = operation
+	c.Data["operation"] = "real " + operation
 	c.Data["num1"] = num1
 	c.Data["num2"] = num2
 	c.TplName = "result.html"
@@ -39,6 +39,8 @@ func (c *mainController) Get() {
 	switch operation {
 	case "sum":
 		c.Data["result"] = add(num1, num2)
+	case "sub":
+		c.Data["result"] = sub(num1, num2)
 	case "product":
 		c.Data["result"] = multiply(num1, num2)
 	default:
@@ -48,6 +50,10 @@ func (c *mainController) Get() {
 
 func add(n1, n2 int) int {
 	return n1 + n2
+}
+
+func sub(n1, n2 int) int {
+	return n1 - n2
 }
 
 func multiply(n1, n2 int) int {
