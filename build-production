@@ -1,0 +1,15 @@
+
+# Create the docker image
+docker build \
+	--network host \
+	-t mathapp-production \
+	-f Dockerfile.production \
+	.
+
+# Run the docker image
+docker run -it \
+	--rm \
+	--network host \
+	--name mathapp-instance-prod \
+	-p 8010:8010 \
+	mathapp-production

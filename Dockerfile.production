@@ -1,0 +1,52 @@
+# Dockerfile.production
+
+# multi-stage build
+#  first job : compile the Go binary.
+#FROM registry.semaphoreci.com/golang:1.15 as builder
+FROM golang:1.15 as builder
+
+# Creates the home and application directories for the app user.
+# Application users are optional, but they are considered good practice
+# to avoid running all processes as root.
+ENV APP_USER app
+ENV APP_HOME /go/src/mathapp
+RUN groupadd $APP_USER && useradd -m -g $APP_USER -l $APP_USER
+RUN mkdir -p $APP_HOME && chown -R $APP_USER:$APP_USER $APP_HOME
+
+WORKDIR $APP_HOME
+USER $APP_USER
+COPY src/ .
+
+# The last commands in the intermediate image download the modules
+# and build the executable:
+RUN go mod download
+RUN go mod verify
+RUN go build -o mathapp
+
+# Second job (final and definitive container): will run Go binary.
+#  We don’t need a full Go installation to run the executable
+#  so we can start from a smaller Debian image:
+FROM debian:buster
+#FROM registry.semaphoreci.com/golang:1.15
+FROM golang:1.15
+
+ENV APP_USER app
+ENV APP_HOME /go/src/mathapp
+RUN groupadd $APP_USER && useradd -m -g $APP_USER -l $APP_USER
+RUN mkdir -p $APP_HOME
+
+WORKDIR $APP_HOME
+
+# COPY command to copy files into the image.
+# chown: changes the owner and group of the files and directories.
+#  from: copies the executable from the intermediate builder image.
+COPY src/conf/ conf/
+COPY src/views/ views/
+COPY --chown=0:0 --from=builder $APP_HOME/mathapp $APP_HOME
+
+# Change the active user:
+USER $APP_USER
+
+# Finalize by exposing the port and starting the binary:
+EXPOSE 8010
+CMD ["./mathapp"]
